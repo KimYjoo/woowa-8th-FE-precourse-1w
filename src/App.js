@@ -15,13 +15,20 @@ class App {
       const regexCheckNumber = new RegExp('\\d');
       // 커스텀 구분자와 일반 문자열을 추출
       const regexParsingString = new RegExp('^(?:(?:\/\/)(.*)?(?:\\\\n))?(.*)?');
+      // 커스텀 구분자 정의부가 있는지 검증
+      const regexCheckCustomRegister = new RegExp('^(\/\/)(?:.*)?(\\\\n)');
       const [_, customDelimiters, targetString] = regexParsingString.exec(userInput);
+      Console.print(customDelimiters)
       // 커스텀 구분자 정의부가 추출되었는지 확인
       if( customDelimiters ) {
         // 커스텀 구분자에 숫자가 있는지 확인
         if ( regexCheckNumber.test(customDelimiters) ) throw new Error('[ERROR]');
         // 커스텀 구분자를 전체 구분자 집합에 추가
         [...customDelimiters].forEach((v) => delimiterSet.add(v));
+      }
+      // 커스텀 구분자 정의부가 있지만 내부가 비었을 경우 검증
+      else if(regexCheckCustomRegister.test(userInput)){
+        throw new Error('[ERROR]');
       }
       
       // 일반 문자열부가 공백인지 검증
@@ -30,7 +37,7 @@ class App {
       const regexMatchDelimiter = new RegExp(`[${Array.from(delimiterSet).join('')}]`);
       const regexOutsideDelimiter = new RegExp(`[^${Array.from(delimiterSet).join('')}\\d]`);
       const delimitedStringArray = targetString.split(regexMatchDelimiter);
-      
+
       if(regexOutsideDelimiter.test(targetString)) throw new Error('[ERROR]');
       // 배열의 요소들을 숫자로 변환하여 모두 더한 값을 저장
       const sumResult = delimitedStringArray.reduce((acc, cur) => {
@@ -44,6 +51,7 @@ class App {
         }
       }, 0);
 
+      //결과 출력
       Console.print(`결과 : ${sumResult}`);
     }
     catch(e) {

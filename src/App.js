@@ -20,28 +20,22 @@ class App {
       // 커스텀 구분자와 타겟 문자열을 추출
       const parsingDelimiterAndTarget = (userInput) => {
         const baseDelimiters = new Set([",", ":"]);
-        const regexParsingCustomAndTarget = new RegExp('^((?:\/\/)(?:.*)?(?:\\\\n))?(.*)?');
-        const [, customRegisterPart, targetStringPart] = regexParsingCustomAndTarget.exec(userInput);
 
-        const verifyCustomDelimiter = (custom) => {
-          // 커스텀 정의부가 없다면 바로 반환
-          if(!custom) return null;
-          // 커스텀 구분자 정의부가 있는지 검증
-          const regexCheckCustomRegister = new RegExp('^(\/\/)(?:.*)?(\\\\n)');
-          // 문자열에 커스텀 구분자 정의부가 제대로 정의되어 있지 않다면 바로 반환
-          if(!regexCheckCustomRegister.test(custom)) return null;
-          // 커스텀 구분자 정의부에서 구분자를 매칭
-          const regexExtractCustomDelimiter = new RegExp('^(?:(?:\/\/)(.*)?(?:\\\\n))');
-          const [, customDelimiters] = regexExtractCustomDelimiter.exec(custom);
+        const regexParsingString = new RegExp('^(?:(\/\/)(.*)?(\\\\n))?(.*)?');
+        const [, customStart, customDelimiters, customEnd, targetString] = regexParsingString.exec(userInput);
 
-          // 정의부가 있지만 내용이 없을 때 에러 
-          if(!regexExtractCustomDelimiter.test(custom)) throw new Error('[ERROR]');
+        const verifyCustomDelimiter = (customStart, custom, customEnd) => {
+          // 커스텀 구분자 정의부가 매칭되지 않았다면 바로 반환
+          if(!(customStart && customEnd)) return null;
+          // 커스텀 구분자가 공란이면 에러
+          if(!custom) throw new Error('[ERROR]');
           // 숫자가 구분자로 사용됐을 때 에러
-          if(regexCheckNumber.test(customDelimiters)) throw new Error('[ERROR]');
+          if(regexCheckNumber.test(custom)) throw new Error('[ERROR]');
   
-          return customDelimiters;
+          return custom;
         }
-        const customDelimiters = verifyCustomDelimiter(customRegisterPart);
+
+        const verifiedCustomDelimiters = verifyCustomDelimiter(customStart, customDelimiters, customEnd);
         // 구분자 통합
         const integrateDelimiter = (accSet, currList) => {
           if(currList){
@@ -50,7 +44,7 @@ class App {
           return accSet;
         }
         // 구분자 합치기
-        const integratedDelimiter = integrateDelimiter(baseDelimiters, customDelimiters);
+        const integratedDelimiter = integrateDelimiter(baseDelimiters, verifiedCustomDelimiters);
 
         const verifyTargetString = (target, delimiters) => {
           const regexOutsideDelimiter = new RegExp(`[^${Array.from(delimiters).join('')}\\d]`);
@@ -63,9 +57,9 @@ class App {
 
           return target;
         }
-        const targetString = verifyTargetString(targetStringPart, integratedDelimiter);
+        const verifiedTargetString = verifyTargetString(targetString, integratedDelimiter);
 
-        return [integratedDelimiter, targetString];
+        return [integratedDelimiter, verifiedTargetString];
       }
       
       

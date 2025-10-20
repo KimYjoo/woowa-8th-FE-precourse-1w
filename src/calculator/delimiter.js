@@ -1,5 +1,6 @@
-import { BASE_DELIMITER } from "../share/constants.js";
-import { arrayToString } from "../share/utils.js";
+import { BASE_DELIMITER } from "../shared/constants.js";
+import { arrayToString } from "../shared/utils.js";
+import { NEED_ESCAPE_CHAR } from "./regex.js";
 
 export const integrateDelimiter = (customDelimiters) => {
     const integratedDelimiters = new Set(BASE_DELIMITER)
@@ -8,13 +9,16 @@ export const integrateDelimiter = (customDelimiters) => {
     }
     return integratedDelimiters;
 }
+const escapeForDelimiters = (s) => (s.replace(NEED_ESCAPE_CHAR, '\\$&'))
 
 export const buildRegexOutsideDelimiter = (delimiters) => {
     const delimiterString = arrayToString(delimiters);
-    return new RegExp(`[^${delimiterString}\\d]`);
+    const escapedDelimiter = escapeForDelimiters(delimiterString);
+    return new RegExp(`[^${escapedDelimiter}\\d]`);
 }
 
 export const buildRegexMatchDelimiter = (delimiters) => {
     const delimiterString = arrayToString(delimiters);
-    return new RegExp(`[${delimiterString}]`);
+    const escapedDelimiter = escapeForDelimiters(delimiterString);
+    return new RegExp(`[${escapedDelimiter}]`);
 }

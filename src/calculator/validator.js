@@ -1,5 +1,5 @@
 import { CHECK_NUMBER } from "./regex.js"
-import { ERROR_MESSAGE } from "../share/constants.js"
+import { ERROR_MESSAGE } from "../shared/constants.js"
 import { buildRegexOutsideDelimiter } from "./delimiter.js"
 
 export const validateCustomDelimiter = (customPart) => {

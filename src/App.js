@@ -1,6 +1,6 @@
 import { Console } from "@woowacourse/mission-utils";
 import calculateSumFromString from "./calculator/index.js";
-import { INPUT_MESSAGE, ERROR_MESSAGE } from "./share/constants.js";
+import { INPUT_MESSAGE, ERROR_MESSAGE } from "./shared/constants.js";
 
 const getUserInput = async () => {
   // 사용자 입력
